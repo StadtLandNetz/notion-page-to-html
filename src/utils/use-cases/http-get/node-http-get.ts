@@ -18,6 +18,9 @@ export class NodeHttpGetClient implements HttpGetClient {
             const format = res.headers['content-type'] || 'image/jpeg';
 
             if (res.statusCode === 403) throw new ForbiddenError('could not fetch data from url: ' + url);
+            if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+              return resolve(this.get(res.headers.location));
+            }
 
             if (format.includes('image')) {
               return resolve({
